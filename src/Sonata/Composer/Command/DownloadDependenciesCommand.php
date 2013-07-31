@@ -38,12 +38,12 @@ class DownloadDependenciesCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getArgument('mode') == 'update') {
-            $mode = 'update --no-dev';
+            $mode = 'update';
         } else {
             $mode = 'install';
         }
 
-        $cmd = sprintf("cd %s && %s %s --prefer-source",
+        $cmd = sprintf("cd %s && %s %s --prefer-source --no-dev",
             $input->getArgument('folder'),
             $this->getApplication()->getComposerExecutable(),
             $mode

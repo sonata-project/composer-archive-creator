@@ -35,7 +35,9 @@ class DownloadRepositoryCommand extends Command
             ->setName('download:repository')
             ->setDescription('Download the a git repository')
             ->addArgument('repository', InputArgument::REQUIRED, 'The GIT url of the repository')
-            ->addArgument('destination', InputArgument::REQUIRED, 'The destination folder, must be empty');
+            ->addArgument('destination', InputArgument::REQUIRED, 'The destination folder, must be empty')
+            ->addOption('branch', null,  InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
+        ;
     }
 
     /**
@@ -45,7 +47,7 @@ class DownloadRepositoryCommand extends Command
     {
         $git = $this->getApplication()->getGitExecutable();
 
-        $cmd = sprintf("%s clone %s %s", $git, $input->getArgument('repository'), $input->getArgument('destination'));
+        $cmd = sprintf("%s clone -b %s %s %s", $git, $input->getOption('branch'), $input->getArgument('repository'), $input->getArgument('destination'));
 
         $output->writeln(sprintf("Starting command %s", $cmd));
 

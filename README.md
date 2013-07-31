@@ -5,6 +5,7 @@ The idea of this project is to create a ready to use archive from a git reposito
 
 ## Features
 
+  * Neutral install (no error possible with local changes)
   * Download git repository
   * Fetch project's dependencies
   * Create archives with ou without VCS files

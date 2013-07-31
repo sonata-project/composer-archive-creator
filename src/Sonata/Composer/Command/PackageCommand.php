@@ -40,6 +40,7 @@ class PackageCommand extends Command
             ->addOption('vcs', null, InputOption::VALUE_NONE, 'include VCS files')
             ->addOption('only-vcs', null, InputOption::VALUE_NONE, 'include VCS files only')
             ->addOption('format', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'archive format', array('zip', 'gz'))
+            ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
         ;
     }
 
@@ -89,6 +90,7 @@ class PackageCommand extends Command
                 ->runCommand('download:repository', array(
                     'repository'  => $input->getArgument('repository'),
                     'destination' => $repoDestination,
+                    '--branch'    => $input->getOption('branch'),
                 ), $output)
                 ->runCommand('download:dependencies', array(
                     'folder' => $repoDestination,
