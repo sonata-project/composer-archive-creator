@@ -4,7 +4,17 @@ include __DIR__.'/../vendor/autoload.php';
 
 use Sonata\Composer\ComposerApplication;
 
-$app = new ComposerApplication(__DIR__.'/../config.yml', 'Composer Vendor');
+$config = null;
+
+if (is_file(getcwd().'/config.yml.dist')) {
+    $config = getcwd().'/config.yml';
+}
+
+if (is_file(getcwd().'/config.yml.dist')) {
+    $config = getcwd().'/config.yml.dist';
+}
+
+$app = new ComposerApplication($config, 'Composer Archiver', '0.0.1-DEV');
 
 $app->add(new \Sonata\Composer\Command\DownloadRepositoryCommand());
 $app->add(new \Sonata\Composer\Command\DownloadDependenciesCommand());

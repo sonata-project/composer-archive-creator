@@ -1,14 +1,12 @@
-sonata_composer:
-    git:                /usr/bin/git
-    composer:           /usr/bin/composer
-    reporting:
-        mailer:
-            enabled:        false
-            from:           Sonata Composer Creator <no-reply@sonata-project.org>
-            to:             contact@sonata-project.org
-            subject:        [archive-creator] %s
-            smtp:
-                host:       localhost
-                port:       25
-                username:
-                password:
+git:                /usr/bin/git
+composer:           /usr/bin/composer
+reporting:
+    mailer:
+        enabled:        false
+        from:           no-reply@sonata-project.org
+        to:             contact@sonata-project.org
+        subject:        "[archive-creator] %s"
+        host:       localhost
+        port:       25
+        username:
+        password:
