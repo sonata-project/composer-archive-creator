@@ -16,7 +16,7 @@ The idea of this project is to create a ready to use archive from a git reposito
 
 ### Create standard archives
 
-    php bin/composer-creator.php package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test
+    php bin/composer-archiver package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test
 
 This will create 2 archives :
 
@@ -25,7 +25,7 @@ This will create 2 archives :
 
 ### Create standard archives including VCS files
 
-    php bin/composer-creator.php package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --vcs
+    php bin/composer-archiver package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --vcs
 
 This will create 4 archives :
 
@@ -36,7 +36,7 @@ This will create 4 archives :
 
 ### Create standard archives including only VCS files
 
-    php bin/composer-creator.php package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --only-vcs
+    php bin/composer-archiver package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --only-vcs
 
 This will create 2 archives :
 
@@ -45,7 +45,7 @@ This will create 2 archives :
 
 ### Create zip archive with only VCS files
 
-    php bin/composer-creator.php package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --reuse --only-vcs --format=zip
+    php bin/composer-archiver package sonata-sandbox-v1.0.0 git@github.com:sonata-project/sandbox.git test --reuse --only-vcs --format=zip
 
 This will create 1 archive :
 
