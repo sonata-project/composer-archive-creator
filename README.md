@@ -10,7 +10,7 @@ The idea of this project is to create a ready to use archive from a git reposito
   * Fetch project's dependencies
   * Create archives with or without VCS files
   * Log
-  * Alerting on fealure (TDB)
+  * Alerting on fealure
 
 ## Usages
 

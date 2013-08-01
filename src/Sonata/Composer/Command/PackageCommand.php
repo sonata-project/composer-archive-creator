@@ -25,6 +25,8 @@ use Symfony\Component\Process\Process;
 
 class PackageCommand extends Command
 {
+    protected $log;
+
     /**
      * {@inheritdoc}
      */
@@ -41,6 +43,7 @@ class PackageCommand extends Command
             ->addOption('only-vcs', null, InputOption::VALUE_NONE, 'include VCS files only')
             ->addOption('format', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'archive format', array('zip', 'gz'))
             ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
+            ->addOption('logfile', null, InputOption::VALUE_REQUIRED, 'The log file to use', false)
         ;
     }
 
@@ -56,13 +59,13 @@ class PackageCommand extends Command
         // Creating custom output to log information
         $date = new \DateTime();
 
-        $log = sprintf("logs/%s_%s.log",$input->getArgument('name'), $date->format("Ymd_Gi"));
+        $this->log = $input->getOption('logfile') ?: sprintf("logs/%s_%s.log",$input->getArgument('name'), $date->format("Ymd_Gi"));
 
         $formatter = new DateOutputFormatter($output->getFormatter());
 
         $output = new ProxyLogger(array(
             $output,
-            new StreamOutput(fopen($log, 'w'))
+            new StreamOutput(fopen($this->log, 'w'))
         ));
         $output->setFormatter($formatter);
 
@@ -136,10 +139,9 @@ class PackageCommand extends Command
         $output->writeln('<info>Done!</info>');
     }
 
-
     /**
-     * @param $command
-     * @param array $args
+     * @param string          $command
+     * @param array           $args
      * @param OutputInterface $output
      *
      * @return CreateArchiveCommand
@@ -155,8 +157,24 @@ class PackageCommand extends Command
 
         $output->writeln(sprintf("Starting command: <info>%s %s</info>", $command->getName(), $input->__toString()));
 
-        if ($command->run($input, $output) !== 0) {
+        $exception = $success = false;
+        try {
+            $success = $command->run($input, $output) === 0;
+        } catch (\Exception $e) {
+            $success = false;
+            $exception = $e;
+        }
+
+        if (!$success) {
+            $this->handlerError();
+        }
+
+        if (!$success) {
             throw new \RuntimeException(sprintf('<error>The command %s failed</error>', $command->getName()));
+        }
+
+        if ($exception) {
+            throw $exception;
         }
 
         $output->writeln("end command");
