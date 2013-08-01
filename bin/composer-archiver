@@ -20,5 +20,6 @@ $app->add(new \Sonata\Composer\Command\DownloadRepositoryCommand());
 $app->add(new \Sonata\Composer\Command\DownloadDependenciesCommand());
 $app->add(new \Sonata\Composer\Command\CreateArchiveCommand());
 $app->add(new \Sonata\Composer\Command\PackageCommand());
+$app->add(new \Sonata\Composer\Command\RunUnitTestsCommand());
 
 $app->run();

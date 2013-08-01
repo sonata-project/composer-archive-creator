@@ -13,6 +13,7 @@ namespace Sonata\Composer\Command;
 
 use Sonata\Composer\Console\DateOutputFormatter;
 use Sonata\Composer\Console\ProxyLogger;
+use Sonata\Composer\Exception\SuccessException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,6 +48,8 @@ class PackageCommand extends Command
             ->addOption('format', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'archive format', array('zip', 'gz'))
             ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
             ->addOption('logfile', null, InputOption::VALUE_REQUIRED, 'The log file to use', false)
+            ->addOption('run-tests', null, InputOption::VALUE_NONE, 'Run test on each dependency')
+            ->addOption('ignore-fail-test', null, InputOption::VALUE_NONE, 'Silently fail test (do not stop the package)')
         ;
     }
 
@@ -104,6 +107,18 @@ class PackageCommand extends Command
                     'mode'   => 'install'
                 ), $output)
             ;
+        }
+
+        if ($input->getOption('run-tests')) {
+            try {
+                $this->runCommand('tests:unit', array(
+                    'folder' => $repoDestination,
+                ), $output);
+            } catch(SuccessException $e) {
+                if (!$input->getOption('ignore-fail-test')) {
+                    throw $e;
+                }
+            }
         }
 
         if (in_array('zip', $input->getOption('format'))) {
@@ -176,7 +191,7 @@ class PackageCommand extends Command
         }
 
         if (!$success) {
-            throw new \RuntimeException(sprintf('<error>The command %s failed</error>', $command->getName()));
+            throw new SuccessException(sprintf('<error>The command %s failed</error>', $command->getName()));
         }
 
         if ($exception) {
