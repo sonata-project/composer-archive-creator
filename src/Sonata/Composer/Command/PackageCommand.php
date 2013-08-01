@@ -22,10 +22,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use Sonata\Composer\Reporter\Message;
 
 class PackageCommand extends Command
 {
     protected $log;
+
+    protected $project;
 
     /**
      * {@inheritdoc}
@@ -35,7 +38,7 @@ class PackageCommand extends Command
         $this
             ->setName('package')
             ->setDescription('Create archives from a git repository')
-            ->addArgument('name', InputArgument::REQUIRED, 'the project name (used to create the archive)')
+            ->addArgument('project', InputArgument::REQUIRED, 'the project name (used to create the archive)')
             ->addArgument('repository', InputArgument::REQUIRED, 'The GIT url of the repository')
             ->addArgument('destination', InputArgument::REQUIRED, 'The destination folder, must be empty')
             ->addOption('reuse', null, InputOption::VALUE_NONE, 'Reuse downloaded file (ie, recreate only package)')
@@ -52,14 +55,15 @@ class PackageCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!preg_match("([a-zA-Z0-1]*)", $input->getArgument('name'))) {
+        if (!preg_match("([a-zA-Z0-1]*)", $input->getArgument('project'))) {
             throw new \RuntimeException('Invalid project name');
         }
 
         // Creating custom output to log information
         $date = new \DateTime();
 
-        $this->log = $input->getOption('logfile') ?: sprintf("logs/%s_%s.log",$input->getArgument('name'), $date->format("Ymd_Gi"));
+        $this->log = $input->getOption('logfile') ?: sprintf("logs/%s_%s.log",$input->getArgument('project'), $date->format("Ymd_Gi"));
+        $this->project = $input->getArgument('project');
 
         $formatter = new DateOutputFormatter($output->getFormatter());
 
@@ -106,7 +110,7 @@ class PackageCommand extends Command
             if ($input->getOption('vcs') || $input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s_vcs.zip", $baseDestination, $input->getArgument('name')),
+                    'destination' => sprintf("%s/%s_vcs.zip", $baseDestination, $input->getArgument('project')),
                     '--vcs' => 'true'
                 ), $output);
             }
@@ -114,7 +118,7 @@ class PackageCommand extends Command
             if (!$input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s.zip", $baseDestination, $input->getArgument('name')),
+                    'destination' => sprintf("%s/%s.zip", $baseDestination, $input->getArgument('project')),
                 ), $output);
             }
         }
@@ -123,7 +127,7 @@ class PackageCommand extends Command
             if ($input->getOption('vcs') || $input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s_vcs.tar.gz", $baseDestination, $input->getArgument('name')),
+                    'destination' => sprintf("%s/%s_vcs.tar.gz", $baseDestination, $input->getArgument('project')),
                     '--vcs' => 'true'
                 ), $output);
             }
@@ -131,12 +135,14 @@ class PackageCommand extends Command
             if (!$input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s.tar.gz", $baseDestination, $input->getArgument('name')),
+                    'destination' => sprintf("%s/%s.tar.gz", $baseDestination, $input->getArgument('project')),
                 ), $output);
             }
         }
 
         $output->writeln('<info>Done!</info>');
+
+        $this->getApplication()->sendReport(Message::create($this->project, file_get_contents($this->log), 'SUCCESS'));
     }
 
     /**
@@ -166,7 +172,7 @@ class PackageCommand extends Command
         }
 
         if (!$success) {
-            $this->handlerError();
+            $this->getApplication()->sendReport(Message::create($this->project, file_get_contents($this->log), 'ERROR'));
         }
 
         if (!$success) {

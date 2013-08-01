@@ -13,18 +13,44 @@ namespace Sonata\Composer\Reporter;
 
 class EmailReporter implements ReporterInterface
 {
-    public function __construct()
+    /**
+     * @param array $settings
+     */
+    public function __construct(array $settings)
     {
-
+        $this->settings = $settings;
     }
 
     /**
-     * @param $logFile
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function handle($logFile)
+    public function handle(Message $message)
     {
-        // TODO: Implement handle() method.
-    }
+        $transport = \Swift_SmtpTransport::newInstance($this->settings['host'], $this->settings['port']);
+        if ($this->settings['username']) {
+            $transport->setUsername($this->settings['username']);
+        }
 
+        if ($this->settings['password']) {
+            $transport->setUsername($this->settings['password']);
+        }
+
+        $mailer = \Swift_Mailer::newInstance($transport);
+
+        $mail = new \Swift_Message(
+            sprintf($this->settings['subject'], $message->getProject(), $message->getStatus()),
+            sprintf(
+"Sonata Composer Archiver
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%s
+
+", $message->getContent())
+        );
+
+        $mail->setTo($this->settings['to']);
+        $mail->setFrom($this->settings['from']);
+
+        $mailer->send($mail);
+    }
 }

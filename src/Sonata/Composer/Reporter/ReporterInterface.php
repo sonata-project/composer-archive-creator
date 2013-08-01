@@ -15,8 +15,9 @@ namespace Sonata\Composer\Reporter;
 interface ReporterInterface
 {
     /**
-     * @param $logFile
-     * @return mixed
+     * @param Message $message
+     *
+     * @return void
      */
-    public function handle($logFile);
+    public function handle(Message $message);
 }

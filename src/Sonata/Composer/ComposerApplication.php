@@ -11,19 +11,66 @@
 
 namespace Sonata\Composer;
 
+use Sonata\Composer\Reporter\EmailReporter;
+use Sonata\Composer\Reporter\Message;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Yaml\Yaml;
+use Sonata\Composer\Reporter\ReporterInterface;
 
 class ComposerApplication extends Application
 {
     protected $configuration = array();
 
-    public function __construct($configurationFile, $name = null, $version = null)
+    protected $reporters = array();
+
+    /**
+     * @param string $configurationFile
+     * @param null   $name
+     * @param null   $version
+     */
+    public function __construct($configurationFile = null, $name = null, $version = null)
     {
         parent::__construct($name, $version);
 
+        $this->configure($configurationFile);
+    }
+
+    /**
+     * @param $configurationFile
+     */
+    public function configure($configurationFile = null)
+    {
+        $config = array();
         if (is_file($configurationFile)) {
-            $this->configuration = Yaml::parse(file_get_contents($configurationFile));
+            $config = Yaml::parse(file_get_contents($configurationFile));
+        }
+
+        $configuration = new Configuration();
+        $processor = new Processor();
+
+        $this->configuration = $processor->processConfiguration($configuration, array($config));
+        $this->configureReporters();
+    }
+
+    /**
+     * Configure reporters
+     */
+    public function configureReporters()
+    {
+        if ($this->configuration['reporting']['mailer']['enabled']) {
+            $this->reporters['mailer'] = new EmailReporter($this->configuration['reporting']['mailer']);
+        }
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function sendReport(Message $message)
+    {
+        foreach ($this->reporters as $reporter) {
+            $reporter->handle($message);
         }
     }
 
@@ -33,7 +80,7 @@ class ComposerApplication extends Application
      *
      * @return mixed
      */
-    public function getConfiguration($name, $default)
+    public function getConfiguration($name, $default = null)
     {
         if (!isset($this->configuration[$name])) {
             return $default;
@@ -60,5 +107,13 @@ class ComposerApplication extends Application
     public function getComposerExecutable()
     {
         return $this->getConfiguration('composer', 'composer');
+    }
+
+    /**
+     * @return ReporterInterface[]
+     */
+    public function getReporters()
+    {
+        return $this->reporters;
     }
 }
