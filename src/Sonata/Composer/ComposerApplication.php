@@ -23,7 +23,7 @@ class ComposerApplication extends Application
         parent::__construct($name, $version);
 
         if (is_file($configurationFile)) {
-            $this->configuration = Yaml::parse($configurationFile);
+            $this->configuration = Yaml::parse(file_get_contents($configurationFile));
         }
     }
 
