@@ -3,6 +3,7 @@ sonata_composer:
     composer:           /usr/bin/composer
     reporting:
         mailer:
+            enabled:        false
             from:           Sonata Composer Creator <no-reply@sonata-project.org>
             to:             contact@sonata-project.org
             subject:        [archive-creator] %s
@@ -11,4 +12,3 @@ sonata_composer:
                 port:       25
                 username:
                 password:
-
