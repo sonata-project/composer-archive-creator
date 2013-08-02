@@ -75,6 +75,11 @@ class RunUnitTestsCommand extends Command
             $tmpVendorFolder = $projectFolder."/".$file->getRelativePath() . "/vendor";
             //$output->writeln(sprintf("Symlink <info>%s</info> => <info>%s</info>", $vendorFolder, $tmpVendorFolder));
 
+            if (is_dir($tmpVendorFolder)) {
+                $output->writeln("<error>The package already have a vendor folder</error>");
+                continue;
+            }
+
             $fs->symlink($vendorFolder, $tmpVendorFolder);
             $success = $this->runPHPunit($projectFolder."/".$file->getRelativePath(), $output);
             $fs->remove($tmpVendorFolder);
