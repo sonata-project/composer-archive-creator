@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Exporter Test Suite" tests="41" assertions="194" failures="0" errors="0" time="2.403590">
+    <testsuite name="Exporter\Test\HandlerTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/HandlerTest.php" namespace="Exporter\Test" fullPackage="Exporter.Test" tests="1" assertions="1" failures="0" errors="0" time="0.024704">
+      <testcase name="testHandler" class="Exporter\Test\HandlerTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/HandlerTest.php" line="10" assertions="1" time="0.024704"/>
+    </testsuite>
+    <testsuite name="Exporter\Test\Source\ArraySourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/ArraySourceIteratorTest.php" namespace="Exporter\Test\Source" fullPackage="Exporter.Test.Source" tests="1" assertions="8" failures="0" errors="0" time="0.008706">
+      <testcase name="testHandler" class="Exporter\Test\Source\ArraySourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/ArraySourceIteratorTest.php" line="10" assertions="8" time="0.008706">
+        <error type="PHPUnit_Framework_Exception">Exporter\Test\Source\ArraySourceIteratorTest::testHandler this is an error</error>
+      </testcase>
+    </testsuite>
+    <testsuite name="Exporter\Test\Source\ChainSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/ChainSourceIteratorTest.php" namespace="Exporter\Test\Source" fullPackage="Exporter.Test.Source" tests="1" assertions="0" failures="0" errors="0" time="0.003980">
+      <testcase name="testIterator" class="Exporter\Test\Source\ChainSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/ChainSourceIteratorTest.php" line="10" assertions="0" time="0.003980"/>
+    </testsuite>
+    <testsuite name="Exporter\Test\Source\CsvSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/CsvSourceIteratorTest.php" namespace="Exporter\Test\Source" fullPackage="Exporter.Test.Source" tests="3" assertions="43" failures="0" errors="0" time="0.017868">
+      <testcase name="testHandler" class="Exporter\Test\Source\CsvSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/CsvSourceIteratorTest.php" line="28" assertions="16" time="0.006585"/>
+      <testcase name="testNoHeaders" class="Exporter\Test\Source\CsvSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/CsvSourceIteratorTest.php" line="46" assertions="13" time="0.005177"/>
+      <testcase name="testRewind" class="Exporter\Test\Source\CsvSourceIteratorTest" file="/vagrant/composer-archive-creator/sonata/repository/vendor/sonata-project/exporter/test/Exporter/Test/Source/CsvSourceIteratorTest.php" line="60" assertions="14" time="0.006106"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
