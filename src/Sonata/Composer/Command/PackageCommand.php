@@ -42,13 +42,17 @@ class PackageCommand extends Command
             ->addArgument('project', InputArgument::REQUIRED, 'the project name (used to create the archive)')
             ->addArgument('repository', InputArgument::REQUIRED, 'The GIT url of the repository')
             ->addArgument('destination', InputArgument::REQUIRED, 'The destination folder, must be empty')
+            ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
+
             ->addOption('reuse', null, InputOption::VALUE_NONE, 'Reuse downloaded file (ie, recreate only package)')
             ->addOption('vcs', null, InputOption::VALUE_NONE, 'include VCS files')
             ->addOption('only-vcs', null, InputOption::VALUE_NONE, 'include VCS files only')
             ->addOption('format', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'archive format', array('zip', 'gz'))
-            ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
-            ->addOption('logfile', null, InputOption::VALUE_REQUIRED, 'The log file to use', false)
-            ->addOption('run-tests', null, InputOption::VALUE_NONE, 'Run test on each dependency')
+
+            ->addOption('report-tests', null, InputOption::VALUE_NONE, 'Enable reports for tests')
+
+            ->addOption('run-unit-tests', null, InputOption::VALUE_NONE, 'Run unit tests on each dependency')
+            ->addOption('run-behat-tests', null, InputOption::VALUE_NONE, 'Run Behat tests')
             ->addOption('ignore-fail-test', null, InputOption::VALUE_NONE, 'Silently fail test (do not stop the package)')
         ;
     }
@@ -65,7 +69,13 @@ class PackageCommand extends Command
         // Creating custom output to log information
         $date = new \DateTime();
 
-        $this->log = $input->getOption('logfile') ?: sprintf("logs/%s_%s.log",$input->getArgument('project'), $date->format("Ymd_Gi"));
+        $baseDestination = sprintf("%s", realpath($input->getArgument('destination')));
+        $repoDestination = sprintf("%s/repository", $baseDestination);
+        $buildRepository = sprintf("%s/build/%s", $baseDestination, $date->format('Ymd_Gis'));
+
+        mkdir($buildRepository, 755, true);
+
+        $this->log = sprintf("%s/console.log", $buildRepository, $date->format("Ymd_Gi"));
         $this->project = $input->getArgument('project');
 
         $formatter = new DateOutputFormatter($output->getFormatter());
@@ -78,8 +88,10 @@ class PackageCommand extends Command
 
         $output->writeln(sprintf("Starting command with options: %s", $input));
 
-        $baseDestination = sprintf("%s", $input->getArgument('destination'));
-        $repoDestination = sprintf("%s/repository", $input->getArgument('destination'));
+        $output->writeln(array(
+            sprintf(" > Base Destination %s", $baseDestination),
+            ""
+        ));
 
         if (!$input->getOption('reuse')) {
 
@@ -109,10 +121,56 @@ class PackageCommand extends Command
             ;
         }
 
-        if ($input->getOption('run-tests')) {
+        $defaultTestOptions = array(
+            'folder' => $repoDestination,
+        );
+
+        if ($input->getOption('report-tests')) {
+            $defaultTestOptions['--build-folder'] = $buildRepository;
+        }
+
+        if ($input->getOption('run-unit-tests')) {
+
+            $unitTestOptions = array_merge($defaultTestOptions, array(
+                'folder' => $repoDestination . '/packages'
+            ));
+
+            if ($input->getOption('report-tests')) {
+                $unitTestOptions = array_merge($defaultTestOptions, array(
+                    '--junit' => true,
+                    '--clover' => true,
+                ));
+            }
+
             try {
-                $this->runCommand('tests:unit', array(
+                $this->runCommand('tests:unit', $unitTestOptions, $output);
+            } catch(SuccessException $e) {
+                if (!$input->getOption('ignore-fail-test')) {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($input->getOption('run-behat-tests')) {
+            $behatTestOptions = array_merge($defaultTestOptions, array(
+
+            ));
+
+            if ($input->getOption('report-tests')) {
+                $behatTestOptions = array_merge($defaultTestOptions, array('--format' => 'junit'));
+            }
+            
+            try {
+                $this->runCommand('tests:behat-setup', array(
                     'folder' => $repoDestination,
+                    '--delete' => true
+                ), $output);
+
+                $this->runCommand('tests:behat', $behatTestOptions, $output);
+
+                $this->runCommand('tests:behat-setup', array(
+                    'folder' => $repoDestination,
+                    '--uninstall' => true
                 ), $output);
             } catch(SuccessException $e) {
                 if (!$input->getOption('ignore-fail-test')) {

@@ -32,6 +32,10 @@ class RunUnitTestsCommand extends Command
             ->setDescription('Run tests on each dependency')
             ->addArgument('folder', InputArgument::REQUIRED, 'the folder where the repository is located')
             ->addOption('stop-on-error', null, InputOption::VALUE_NONE, 'Stop if a test fail')
+
+            ->addOption('build-folder', null, InputOption::VALUE_REQUIRED, 'The build folder where reports will be generated')
+            ->addOption('junit', null, InputOption::VALUE_NONE, 'Log test execution in JUnit XML format to file')
+            ->addOption('clover', null, InputOption::VALUE_NONE, 'Generate code coverage report in Clover XML format')
         ;
     }
 
@@ -40,6 +44,14 @@ class RunUnitTestsCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('build-folder') && ($input->getOption('junit') || $input->getOption('clover'))) {
+            throw new \RuntimeException('Please provide a build folder');
+        }
+
+        if ($input->getOption('build-folder') && !is_writable($input->getOption('build-folder'))) {
+            throw new \RuntimeException(sprintf('The build folder %s is not writable', $input->getOption('build-folder')));
+        }
+
         if (!is_dir($input->getArgument('folder'))) {
             throw new \RuntimeException(sprintf('The folder %s does not exist', $input->getArgument('folder')));
         }
@@ -70,6 +82,12 @@ class RunUnitTestsCommand extends Command
                 );
             }
 
+            $buildFolder = sprintf("%s/%s", $input->getOption('build-folder'), $metadata['name']);
+
+            if ($input->getOption('build-folder')) {
+                mkdir($buildFolder, 0755, true);
+            }
+
             $output->writeln(sprintf("Found <info>%s</info> for package <info>%s</info>", $file, $metadata['name']));
 
             $tmpVendorFolder = $projectFolder."/".$file->getRelativePath() . "/vendor";
@@ -81,7 +99,7 @@ class RunUnitTestsCommand extends Command
             }
 
             $fs->symlink($vendorFolder, $tmpVendorFolder);
-            $success = $this->runPHPunit($projectFolder."/".$file->getRelativePath(), $output);
+            $success = $this->runPHPunit($projectFolder."/".$file->getRelativePath(), $input, $output, $buildFolder);
             $fs->remove($tmpVendorFolder);
 
             if (!$success) {
@@ -124,15 +142,26 @@ class RunUnitTestsCommand extends Command
 
     /**
      * @param string          $folder
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     * @param string          $buildFolder
      *
      * @return bool
      */
-    protected function runPHPunit($folder, OutputInterface $output)
+    protected function runPHPunit($folder, InputInterface $input, OutputInterface $output, $buildFolder)
     {
         $output->writeln(sprintf(" >> Running PHPUnit at <info>%s</info>", $folder));
 
-        $cmd = sprintf("cd %s && phpunit", $folder);
+        $cliOptions = array();
+        if ($input->getOption('junit')) {
+            $cliOptions[] = sprintf('--log-junit %s/junit.xml', $buildFolder);
+        }
+
+        if ($input->getOption('clover')) {
+            $cliOptions[] = sprintf('--coverage-clover %s/clover.xml', $buildFolder);
+        }
+
+        $cmd = sprintf("cd %s && phpunit %s", $folder, implode(" ", $cliOptions));
 
         $process = new Process($cmd);
         $process->setTimeout(null);

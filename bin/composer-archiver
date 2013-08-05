@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 include __DIR__.'/../vendor/autoload.php';
@@ -21,5 +22,7 @@ $app->add(new \Sonata\Composer\Command\DownloadDependenciesCommand());
 $app->add(new \Sonata\Composer\Command\CreateArchiveCommand());
 $app->add(new \Sonata\Composer\Command\PackageCommand());
 $app->add(new \Sonata\Composer\Command\RunUnitTestsCommand());
+$app->add(new \Sonata\Composer\Command\RunBehatTestsCommand());
+$app->add(new \Sonata\Composer\Command\InstallBehatCommand());
 
 $app->run();
