@@ -44,6 +44,8 @@ class PackageCommand extends Command
             ->addArgument('destination', InputArgument::REQUIRED, 'The destination folder, must be empty')
             ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch to checkout', 'master')
 
+            ->addOption('build-folder', null, InputOption::VALUE_REQUIRED, 'The build folder where all files will generated (logs, junit, packages, etc ...)')
+
             ->addOption('reuse', null, InputOption::VALUE_NONE, 'Reuse downloaded file (ie, recreate only package)')
             ->addOption('vcs', null, InputOption::VALUE_NONE, 'include VCS files')
             ->addOption('only-vcs', null, InputOption::VALUE_NONE, 'include VCS files only')
@@ -71,7 +73,12 @@ class PackageCommand extends Command
 
         $baseDestination = sprintf("%s", $input->getArgument('destination'));
         $repoDestination = sprintf("%s/repository", $baseDestination);
-        $buildRepository = sprintf("%s/build/%s", $baseDestination, $date->format('Ymd_Gis'));
+
+        if (!$input->getOption('build-folder')) {
+            $buildRepository = sprintf("%s/build/%s", $baseDestination, $date->format('Ymd_Gis'));
+        } else {
+            $buildRepository = $input->getOption('build-folder');
+        }
 
         mkdir($buildRepository, 755, true);
 
@@ -125,18 +132,17 @@ class PackageCommand extends Command
             'folder' => $repoDestination,
         );
 
-        if ($input->getOption('report-tests')) {
-            $defaultTestOptions['--build-folder'] = $buildRepository;
-        }
-
         if ($input->getOption('run-unit-tests')) {
 
+            @mkdir( $buildRepository . '/packages');
+
             $unitTestOptions = array_merge($defaultTestOptions, array(
-                'folder' => $repoDestination . '/packages'
+                'folder'         => $repoDestination,
+                '--build-folder' => $buildRepository . '/packages'
             ));
 
             if ($input->getOption('report-tests')) {
-                $unitTestOptions = array_merge($defaultTestOptions, array(
+                $unitTestOptions = array_merge($unitTestOptions, array(
                     '--junit' => true,
                     '--clover' => true,
                 ));
@@ -153,11 +159,11 @@ class PackageCommand extends Command
 
         if ($input->getOption('run-behat-tests')) {
             $behatTestOptions = array_merge($defaultTestOptions, array(
-
+                '--build-folder' => $buildRepository
             ));
 
             if ($input->getOption('report-tests')) {
-                $behatTestOptions = array_merge($defaultTestOptions, array('--format' => 'junit'));
+                $behatTestOptions = array_merge($behatTestOptions, array('--format' => 'junit'));
             }
 
             try {
@@ -179,11 +185,18 @@ class PackageCommand extends Command
             }
         }
 
+        if ($input->getOption('report-tests')) {
+            $this->runCommand('tests:merge-junit', array(
+                'folder' => $buildRepository,
+                'target' => $buildRepository."/junit.xml"
+            ), $output);
+        }
+
         if (in_array('zip', $input->getOption('format'))) {
             if ($input->getOption('vcs') || $input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s_vcs.zip", $baseDestination, $input->getArgument('project')),
+                    'destination' => sprintf("%s/%s_vcs.zip", $buildRepository, $input->getArgument('project')),
                     '--vcs' => 'true'
                 ), $output);
             }
@@ -191,7 +204,7 @@ class PackageCommand extends Command
             if (!$input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s.zip", $baseDestination, $input->getArgument('project')),
+                    'destination' => sprintf("%s/%s.zip", $buildRepository, $input->getArgument('project')),
                 ), $output);
             }
         }
@@ -200,7 +213,7 @@ class PackageCommand extends Command
             if ($input->getOption('vcs') || $input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s_vcs.tar.gz", $baseDestination, $input->getArgument('project')),
+                    'destination' => sprintf("%s/%s_vcs.tar.gz", $buildRepository, $input->getArgument('project')),
                     '--vcs' => 'true'
                 ), $output);
             }
@@ -208,7 +221,7 @@ class PackageCommand extends Command
             if (!$input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
                     'folder' => $repoDestination,
-                    'destination' => sprintf("%s/%s.tar.gz", $baseDestination, $input->getArgument('project')),
+                    'destination' => sprintf("%s/%s.tar.gz", $buildRepository, $input->getArgument('project')),
                 ), $output);
             }
         }
@@ -234,7 +247,7 @@ class PackageCommand extends Command
         )));
         $command = $this->getApplication()->find($command);
 
-        $output->writeln(sprintf("Starting command: <info>%s %s</info>", $command->getName(), $input->__toString()));
+        $output->writeln(sprintf("Starting command: <info>%s</info>", $input->__toString()));
 
         $exception = $success = false;
         try {

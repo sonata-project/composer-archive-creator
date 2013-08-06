@@ -85,13 +85,12 @@ class RunUnitTestsCommand extends Command
             $buildFolder = sprintf("%s/%s", $input->getOption('build-folder'), $metadata['name']);
 
             if ($input->getOption('build-folder')) {
-                mkdir($buildFolder, 0755, true);
+                @mkdir($buildFolder, 0755, true);
             }
 
             $output->writeln(sprintf("Found <info>%s</info> for package <info>%s</info>", $file, $metadata['name']));
 
             $tmpVendorFolder = $projectFolder."/".$file->getRelativePath() . "/vendor";
-            //$output->writeln(sprintf("Symlink <info>%s</info> => <info>%s</info>", $vendorFolder, $tmpVendorFolder));
 
             if (is_dir($tmpVendorFolder)) {
                 $output->writeln("<error>The package already have a vendor folder</error>");
@@ -162,6 +161,7 @@ class RunUnitTestsCommand extends Command
         }
 
         $cmd = sprintf("cd %s && phpunit %s", $folder, implode(" ", $cliOptions));
+        $output->writeln(sprintf(" >> PHPUnit command %s", $cmd));
 
         $process = new Process($cmd);
         $process->setTimeout(null);
