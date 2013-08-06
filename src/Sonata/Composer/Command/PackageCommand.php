@@ -69,7 +69,7 @@ class PackageCommand extends Command
         // Creating custom output to log information
         $date = new \DateTime();
 
-        $baseDestination = sprintf("%s", realpath($input->getArgument('destination')));
+        $baseDestination = sprintf("%s", $input->getArgument('destination'));
         $repoDestination = sprintf("%s/repository", $baseDestination);
         $buildRepository = sprintf("%s/build/%s", $baseDestination, $date->format('Ymd_Gis'));
 
@@ -159,7 +159,7 @@ class PackageCommand extends Command
             if ($input->getOption('report-tests')) {
                 $behatTestOptions = array_merge($defaultTestOptions, array('--format' => 'junit'));
             }
-            
+
             try {
                 $this->runCommand('tests:behat-setup', array(
                     'folder' => $repoDestination,
