@@ -229,6 +229,7 @@ class PackageCommand extends Command
         }
 
         if ($input->getOption('run-api-generation')) {
+            @mkdir( $buildRepository . '/api');
             $this->runCommand('api:generate', array(
                 'folder' => $repoDestination,
                 'build-folder' => $buildRepository.'/api',
