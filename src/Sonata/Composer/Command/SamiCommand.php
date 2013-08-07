@@ -82,8 +82,8 @@ use Symfony\Component\Finder\Finder;
 return new Sami(\$iterator, array(
     'title'                => 'API',
     'default_opened_level' => 0,
-    'build_dir'            => '$buildFolder/api',
-    'cache_dir'            => '$buildFolder/api-cache',
+    'build_dir'            => '$buildFolder',
+    'cache_dir'            => '$buildFolder.cache',
     'theme'                => 'enhanced',
     'simulate_namespaces'  => false,
 ));
@@ -103,7 +103,7 @@ CONTENT
 
         $output->writeln(sprintf("Deleting cache folder %s/api-cache", $buildFolder));
 
-        $process = new PProcess(sprintf("rm -rf %s/api-cache", $buildFolder));
+        $process = new Process(sprintf("rm -rf %s.cache %s", $buildFolder, $samiConf));
         $process->run();
 
         $output->writeln('Done!');

@@ -56,6 +56,8 @@ class PackageCommand extends Command
             ->addOption('run-unit-tests', null, InputOption::VALUE_NONE, 'Run unit tests on each dependency')
             ->addOption('run-behat-tests', null, InputOption::VALUE_NONE, 'Run Behat tests')
             ->addOption('ignore-fail-test', null, InputOption::VALUE_NONE, 'Silently fail test (do not stop the package)')
+
+            ->addOption('run-api-generation', null, InputOption::VALUE_NONE, 'Run API Documentation generator')
         ;
     }
 
@@ -224,6 +226,13 @@ class PackageCommand extends Command
                     'destination' => sprintf("%s/%s.tar.gz", $buildRepository, $input->getArgument('project')),
                 ), $output);
             }
+        }
+
+        if ($input->getOption('run-api-generation')) {
+            $this->runCommand('api:generate', array(
+                'folder' => $repoDestination,
+                'build-folder' => $buildRepository.'/api',
+            ), $output);
         }
 
         $output->writeln('<info>Done!</info>');
