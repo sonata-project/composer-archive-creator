@@ -52,6 +52,7 @@ class DownloadRepositoryCommand extends Command
         $output->writeln(sprintf("Starting command %s", $cmd));
 
         $process = new Process($cmd);
+        $process->setTimeout(null);
 
         $process->run(function($type, $data) use ($output) {
             $output->write($data, false, OutputInterface::OUTPUT_PLAIN);
