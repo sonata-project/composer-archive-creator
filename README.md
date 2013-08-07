@@ -12,6 +12,8 @@ The idea of this project is to create a ready to use archive from a git reposito
   * Log
   * Alerting on fealure
   * Start unit tests on each dependency
+  * Generate a global JUnit.xml file for all tests
+  * Generate API documentation (using Sami)
 
 ## Usages
 

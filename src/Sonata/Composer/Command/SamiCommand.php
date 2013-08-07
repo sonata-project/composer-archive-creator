@@ -101,6 +101,11 @@ CONTENT
             $output->write($data, false, OutputInterface::OUTPUT_PLAIN);
         });
 
+        $output->writeln(sprintf("Deleting cache folder %s/api-cache", $buildFolder));
+
+        $process = new PProcess(sprintf("rm -rf %s/api-cache", $buildFolder));
+        $process->run();
+
         $output->writeln('Done!');
     }
 }
