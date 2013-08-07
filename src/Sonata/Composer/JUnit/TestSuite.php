@@ -11,6 +11,7 @@
 
 namespace Sonata\Composer\JUnit;
 
+use Sonata\Composer\Utils;
 
 class TestSuite
 {
@@ -269,8 +270,8 @@ class TestSuite
             $content .= (string) $testSuite->toXml();
         }
 
-        return sprintf('<testsuite name="%s" tests="%s" assertions="%d" failures="%d" errors="%d" time="%.6f">%s</testsuite>',
-            $this->getName(),
+        return sprintf('<testsuite name="%s" tests="%d" assertions="%d" failures="%d" errors="%d" time="%.6f">%s</testsuite>',
+            Utils::encodeXml($this->getName()),
             $this->countTests(),
             $this->getAssertions(),
             $this->getFailure(),

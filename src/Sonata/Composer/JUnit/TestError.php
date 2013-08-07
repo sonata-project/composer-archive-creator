@@ -11,6 +11,8 @@
 
 namespace Sonata\Composer\JUnit;
 
+use Sonata\Composer\Utils;
+
 class TestError
 {
     protected $type;
@@ -84,8 +86,8 @@ class TestError
     public function toXml()
     {
         return sprintf('<error type="%s">%s</error>',
-            $this->getType(),
-            $this->getMessage()
+            Utils::encodeXml($this->getType()),
+            Utils::cdata($this->getMessage())
         );
     }
 }

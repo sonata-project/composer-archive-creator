@@ -11,6 +11,8 @@
 
 namespace Sonata\Composer\JUnit;
 
+use Sonata\Composer\Utils;
+
 class TestCase
 {
     protected $name;
@@ -186,9 +188,9 @@ class TestCase
     public function toXml()
     {
         return sprintf('<testcase name="%s" class="%s" file="%s" line="%d" assertions="%d" time="%.6f"%s',
-            $this->getName(),
-            $this->getClass(),
-            $this->getFile(),
+            Utils::encodeXml($this->getName()),
+            Utils::encodeXml($this->getClass()),
+            Utils::encodeXml($this->getFile()),
             $this->getLine(),
             $this->getAssertions(),
             $this->getTime(),

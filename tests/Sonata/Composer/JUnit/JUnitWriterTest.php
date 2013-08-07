@@ -8,9 +8,12 @@ class JUnitWriterTest extends \PHPUnit_Framework_TestCase
 {
     public function testSave()
     {
-        $suite = TestSuite::create('myname', '/foo/bar.php', 'foo.bar', 'foo.bar');
+        $suite = TestSuite::create('myname "', '/foo/bar.php', 'foo.bar', 'foo.bar');
 
-        $suite->addTestCase(TestCase::create('myname', 2, 0.34500, 'stdClass', '/foo/bar.php', 12));
+        $testcase = TestCase::create('myname "', 2, 0.34500, 'stdClass', '/foo/bar.php', 12);
+        $testcase->setError(new TestError('my "type', "</error> message ]]>"));
+
+        $suite->addTestCase($testcase);
         $suite->addTestCase(TestCase::create('foobar', 2, 0.34500, 'stdClass', '/foo/bar.php', 25));
 
         $write = new JUnitWriter();
