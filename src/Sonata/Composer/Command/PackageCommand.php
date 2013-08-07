@@ -100,7 +100,7 @@ class PackageCommand extends Command
             ""
         ));
 
-        if (!$input->getOption('reuse')) {
+        if (!$input->getOption('reuse') || !is_dir($repoDestination)) {
 
             if (is_dir($repoDestination)) {
                 $output->writeln(sprintf("Deleting %s", $repoDestination));
