@@ -22,7 +22,7 @@ class JUnitMerger
     public function merge(\Iterator $files, TestSuite $testSuite = null)
     {
         if (!$testSuite) {
-            $testSuite = new TestSuite(null, null, null, null, null);
+            $testSuite = new TestSuite(null, null, null, null);
         }
 
         $loader = new PHPUnitLoader();
@@ -34,11 +34,7 @@ class JUnitMerger
                 continue;
             }
 
-            foreach ($suite->getTestCases() as $testCase) {
-                $testSuite->addTestCase($testCase);
-            }
-
-            $testSuite->setFailure($suite->getFailure() + $testSuite->getFailure());
+            $testSuite->addTestSuite($suite);
         }
 
         return $testSuite;

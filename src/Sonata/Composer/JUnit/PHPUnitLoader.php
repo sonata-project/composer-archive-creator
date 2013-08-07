@@ -26,15 +26,23 @@ class PHPUnitLoader
             return null;
         }
 
-        $testsuite = new TestSuite(
-            (string) $xml->testsuite[0]['name'],
-            null,
-            null,
-            null,
-            (int) $xml->testsuite[0]['errors']
-        );
+        $testSuite = new TestSuite((string) $xml->testsuite['name'], null, null, null);
 
-        foreach ($xml->xpath('//testcase') as $element) {
+        $this->addTestCase($testSuite, $xml->testsuite);
+        $this->addTestSuite($testSuite, $xml->testsuite);
+
+        return $testSuite;
+    }
+
+    /**
+     * Add testcases to the provided TestSuite from the XML node
+     *
+     * @param TestSuite         $testSuite
+     * @param \SimpleXMLElement $xml
+     */
+    public function addTestCase(TestSuite $testSuite, \SimpleXMLElement $xml)
+    {
+        foreach ($xml->xpath('./testcase') as $element) {
             $testcase = new TestCase(
                 (string) $element['name'],
                 (int)    $element['assertions'],
@@ -44,16 +52,37 @@ class PHPUnitLoader
                 (int)    $element['line']
             );
 
-            if ($element->error[0]) {
+            if ($element->error) {
                 $testcase->setError(new TestError(
                     (string) $element->error[0]->attributes()->type,
                     (string) $element->error[0]
                 ));
             }
 
-            $testsuite->addTestCase($testcase);
+            $testSuite->addTestCase($testcase);
         }
+    }
 
-        return $testsuite;
+    /**
+     * Add child TestSuite to the provided TestSuite from the XML node
+     *
+     * @param TestSuite         $testSuite
+     * @param \SimpleXMLElement $xml
+     */
+    public function addTestSuite(TestSuite $testSuite, \SimpleXMLElement $xml)
+    {
+        foreach ($xml->xpath('./testsuite') as $element) {
+            $suite = new TestSuite(
+                (string) $element['name'],
+                (string) $element['file'],
+                (string) $element['namespace'],
+                (string) $element['fullPackage']
+            );
+
+            $this->addTestCase($suite, $element);
+            $this->addTestSuite($suite, $element);
+
+            $testSuite->addTestSuite($suite);
+        }
     }
 }

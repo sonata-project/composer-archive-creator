@@ -28,6 +28,8 @@ class TestSuite
 
     protected $testCases = array();
 
+    protected $testSuites = array();
+
     protected $time = 0;
 
     protected $assertions = 0;
@@ -37,16 +39,14 @@ class TestSuite
      * @param string $file
      * @param string $namespace
      * @param string $fullPackage
-     * @param int    $errors
      * @param array $testCases
      */
-    public function __construct($name, $file, $namespace, $fullPackage, $errors, array $testCases = array())
+    public function __construct($name, $file, $namespace, $fullPackage, array $testCases = array())
     {
         $this->name = $name;
         $this->file = $file;
         $this->namespace = $namespace;
         $this->fullPackage = $fullPackage;
-        $this->errors = $errors;
         $this->setTestCases($testCases);
     }
 
@@ -55,14 +55,13 @@ class TestSuite
      * @param string $file
      * @param string $namespace
      * @param string $fullPackage
-     * @param int    $errors
      * @param array $testCases
      *
      * @return TestSuite
      */
-    public static function create($name, $file, $namespace = null, $fullPackage = null, $errors = null, array $testCases = array())
+    public static function create($name, $file, $namespace = null, $fullPackage = null, array $testCases = array())
     {
-        return new self($name, $file, $namespace, $fullPackage, $errors, $testCases);
+        return new self($name, $file, $namespace, $fullPackage, $testCases);
     }
 
     /**
@@ -192,9 +191,22 @@ class TestSuite
     {
         $this->testCases[] = $testCase;
 
-        $this->time += $testCase->getTime();
+        $this->time       += $testCase->getTime();
         $this->assertions += $testCase->getAssertions();
-        $this->errors += $testCase->getError() ? 1 : 0;
+        $this->errors     += $testCase->getError() ? 1 : 0;
+    }
+
+    /**
+     * @param TestSuite $testSuite
+     */
+    public function addTestSuite(TestSuite $testSuite)
+    {
+        $this->testSuites[] = $testSuite;
+
+        $this->time       += $testSuite->getTime();
+        $this->assertions += $testSuite->getAssertions();
+        $this->errors     += $testSuite->getErrors();
+        $this->failure    += $testSuite->getFailure(); // this seems to be wrong
     }
 
     /**
@@ -202,7 +214,13 @@ class TestSuite
      */
     public function countTests()
     {
-        return count($this->testCases);
+        $total = count($this->testCases);
+
+        foreach ($this->testSuites as $suite) {
+            $total += $suite->countTests();
+        }
+
+        return $total;
     }
 
     /**
@@ -230,13 +248,25 @@ class TestSuite
     }
 
     /**
+     * @return array
+     */
+    public function getTestSuites()
+    {
+        return $this->testSuites;
+    }
+
+    /**
      * @return string
      */
     public function toXml()
     {
         $content = "";
         foreach ($this->getTestCases() as $testCase) {
-            $content .= (string) $testCase;
+            $content .= (string) $testCase->toXml();
+        }
+
+        foreach ($this->getTestSuites() as $testSuite) {
+            $content .= (string) $testSuite->toXml();
         }
 
         return sprintf('<testsuite name="%s" tests="%s" assertions="%d" failures="%d" errors="%d" time="%.6f">%s</testsuite>',

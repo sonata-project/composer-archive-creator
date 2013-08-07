@@ -28,7 +28,7 @@ class JUnitWriter
 
         fwrite($file, "<?xml version=\"1.0\" ?>\n");
         fwrite($file, "<testsuites>\n");
-        fwrite($file, (string) $testSuite);
+        fwrite($file, (string) $testSuite->toXml());
         fwrite($file, "</testsuites>");
 
         if ($close) {

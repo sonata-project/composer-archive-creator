@@ -27,4 +27,18 @@ class TestSuiteTest extends \PHPUnit_Framework_TestCase
         // WTF!! at least 0.700000001 .... not this => php -r "var_dump(0.345 + 0.345);" => float(0.69)
         // $this->assertEquals(0.70000, $suite->getTime());
     }
+
+    public function testWithTestSuite()
+    {
+        $master = TestSuite::create('master', null);
+
+        $suite = TestSuite::create('myname', '/foo/bar.php', 'foo.bar', 'foo.bar');
+
+        $suite->addTestCase(TestCase::create('myname', 2, 0.34500, 'stdClass', '/foo/bar.php', 12));
+        $suite->addTestCase(TestCase::create('foobar', 2, 0.34500, 'stdClass', '/foo/bar.php', 25));
+
+        $master->addTestSuite($suite);
+
+        $this->assertEquals(4, $suite->getAssertions());
+    }
 }
