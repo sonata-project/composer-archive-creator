@@ -11,7 +11,7 @@ class TestSuiteTest extends \PHPUnit_Framework_TestCase
     {
         $suite = TestSuite::create('myname', '/foo/bar.php', 'foo.bar', 'foo.bar');
 
-        $expected = '<testsuite name="myname" tests="0" assertions="0" failures="0" errors="0" time="0.000000"></testsuite>';
+        $expected = '<testsuite name="myname" tests="0" assertions="0" namespace="foo.bar" fullsPackage="foo.bar" failures="0" errors="0" time="0.000000"></testsuite>';
 
         $this->assertEquals($expected, $suite->toXml());
     }

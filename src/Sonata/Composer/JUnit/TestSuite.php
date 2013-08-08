@@ -270,10 +270,12 @@ class TestSuite
             $content .= (string) $testSuite->toXml();
         }
 
-        return sprintf('<testsuite name="%s" tests="%d" assertions="%d" failures="%d" errors="%d" time="%.6f">%s</testsuite>',
+        return sprintf('<testsuite name="%s" tests="%d" assertions="%d" namespace="%s" fullsPackage="%s" failures="%d" errors="%d" time="%.6f">%s</testsuite>',
             Utils::encodeXml($this->getName()),
             $this->countTests(),
             $this->getAssertions(),
+            Utils::encodeXml($this->getNamespace()),
+            Utils::encodeXml($this->getFullPackage()),
             $this->getFailure(),
             $this->getErrors(),
             $this->getTime(),
