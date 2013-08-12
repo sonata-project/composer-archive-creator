@@ -36,6 +36,7 @@ class RunUnitTestsCommand extends Command
             ->addOption('build-folder', null, InputOption::VALUE_REQUIRED, 'The build folder where reports will be generated')
             ->addOption('junit', null, InputOption::VALUE_NONE, 'Log test execution in JUnit XML format to file')
             ->addOption('clover', null, InputOption::VALUE_NONE, 'Generate code coverage report in Clover XML format')
+            ->addOption('white-list-package', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Package to run tests against')
         ;
     }
 
@@ -82,11 +83,27 @@ class RunUnitTestsCommand extends Command
                 );
             }
 
+            if (count($input->getOption('white-list-package')) > 0) {
+                $match = false;
+                foreach($input->getOption('white-list-package') as $definition) {
+                    if (preg_match("@".$definition."@", $metadata['name'])) {
+                        $match = true;
+                    }
+                }
+
+                if (!$match) {
+                    $output->writeln(sprintf("Skipping test %s", $metadata['name']));
+                    continue;
+                }
+            }
+
             $buildFolder = sprintf("%s/%s", $input->getOption('build-folder'), $metadata['name']);
 
             if ($input->getOption('build-folder')) {
                 @mkdir($buildFolder, 0755, true);
             }
+
+            $buildFolder = realpath($buildFolder);
 
             $output->writeln(sprintf("Found <info>%s</info> for package <info>%s</info>", $file, $metadata['name']));
 
