@@ -29,6 +29,8 @@ class TestCase
 
     protected $error;
 
+    protected $failure;
+
     /**
      * @param string $name
      * @param string $class
@@ -175,6 +177,22 @@ class TestCase
     }
 
     /**
+     * @param TestFailure $failure
+     */
+    public function setFailure(TestFailure $failure)
+    {
+        $this->failure = $failure;
+    }
+
+    /**
+     * @return TestFailure
+     */
+    public function getFailure()
+    {
+        return $this->failure;
+    }
+
+    /**
      * @return string
      */
     public function __toString()
@@ -187,6 +205,15 @@ class TestCase
      */
     public function toXml()
     {
+        $inner = "";
+        if ($this->getError()) {
+            $inner .= $this->getError();
+        }
+
+        if ($this->getFailure()) {
+            $inner .= $this->getFailure();
+        }
+
         return sprintf('<testcase name="%s" class="%s" file="%s" line="%d" assertions="%d" time="%.6f"%s',
             Utils::encodeXml($this->getName()),
             Utils::encodeXml($this->getClass()),
@@ -194,7 +221,7 @@ class TestCase
             $this->getLine(),
             $this->getAssertions(),
             $this->getTime(),
-            $this->getError() ? sprintf(">%s</testcase>", $this->getError()) : "/>"
+            $inner ? sprintf(">%s</testcase>", $inner) : "/>"
         );
     }
 }

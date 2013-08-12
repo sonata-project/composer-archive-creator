@@ -59,6 +59,13 @@ class PHPUnitLoader
                 ));
             }
 
+            if ($element->failure) {
+                $testcase->setFailure(new TestFailure(
+                    (string) $element->error[0]->attributes()->type,
+                    (string) $element->error[0]
+                ));
+            }
+
             $testSuite->addTestCase($testcase);
         }
     }

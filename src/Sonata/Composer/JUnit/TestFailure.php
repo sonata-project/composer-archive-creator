@@ -13,14 +13,14 @@ namespace Sonata\Composer\JUnit;
 
 use Sonata\Composer\Utils;
 
-class TestError extends TestMessage
+class TestFailure extends TestMessage
 {
     /**
      * @return string
      */
     public function toXml()
     {
-        return sprintf('<error type="%s">%s</error>',
+        return sprintf('<failure type="%s">%s</failure>',
             Utils::encodeXml($this->getType()),
             Utils::cdata($this->getMessage())
         );

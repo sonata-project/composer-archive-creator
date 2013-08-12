@@ -23,7 +23,7 @@ class TestSuite
 
     protected $fullPackage;
 
-    protected $failure;
+    protected $failures;
 
     protected $errors;
 
@@ -83,19 +83,11 @@ class TestSuite
     }
 
     /**
-     * @param mixed $failure
-     */
-    public function setFailure($failure)
-    {
-        $this->failure = $failure;
-    }
-
-    /**
      * @return mixed
      */
-    public function getFailure()
+    public function getFailures()
     {
-        return $this->failure;
+        return $this->failures;
     }
 
     /**
@@ -195,6 +187,7 @@ class TestSuite
         $this->time       += $testCase->getTime();
         $this->assertions += $testCase->getAssertions();
         $this->errors     += $testCase->getError() ? 1 : 0;
+        $this->failures   += $testCase->getFailure() ? 1 : 0;
     }
 
     /**
@@ -207,7 +200,7 @@ class TestSuite
         $this->time       += $testSuite->getTime();
         $this->assertions += $testSuite->getAssertions();
         $this->errors     += $testSuite->getErrors();
-        $this->failure    += $testSuite->getFailure(); // this seems to be wrong
+        $this->failures   += $testSuite->getFailures(); // this seems to be wrong
     }
 
     /**
@@ -276,7 +269,7 @@ class TestSuite
             $this->getAssertions(),
             Utils::encodeXml($this->getNamespace()),
             Utils::encodeXml($this->getFullPackage()),
-            $this->getFailure(),
+            $this->getFailures(),
             $this->getErrors(),
             $this->getTime(),
             $content
