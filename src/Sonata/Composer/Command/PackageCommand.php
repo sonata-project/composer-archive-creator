@@ -54,6 +54,9 @@ class PackageCommand extends Command
             ->addOption('report-tests', null, InputOption::VALUE_NONE, 'Enable reports for tests')
 
             ->addOption('run-unit-tests', null, InputOption::VALUE_NONE, 'Run unit tests on each dependency')
+            ->addOption('unit-tests-white-list-package', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Package to run tests against')
+
+
             ->addOption('run-behat-tests', null, InputOption::VALUE_NONE, 'Run Behat tests')
             ->addOption('ignore-fail-test', null, InputOption::VALUE_NONE, 'Silently fail test (do not stop the package)')
 
@@ -140,7 +143,8 @@ class PackageCommand extends Command
 
             $unitTestOptions = array_merge($defaultTestOptions, array(
                 'folder'         => $repoDestination,
-                '--build-folder' => $buildRepository . '/packages'
+                '--build-folder' => $buildRepository . '/packages',
+                '--white-list-package' => $input->getOption('unit-tests-white-list-package')
             ));
 
             if ($input->getOption('report-tests')) {
