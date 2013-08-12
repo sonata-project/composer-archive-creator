@@ -29,7 +29,9 @@ class DownloadDependenciesCommand extends Command
             ->setName('download:dependencies')
             ->setDescription('Download composer dependencies')
             ->addArgument('folder', InputArgument::REQUIRED, 'the composer file')
-            ->addArgument('mode', InputArgument::OPTIONAL, 'the mode to install file', 'update');
+            ->addArgument('mode', InputArgument::OPTIONAL, 'the mode to install file', 'update')
+            ->addOption('prefer-source', null, InputOption::VALUE_NONE, 'Composer prefer source mode')
+        ;
     }
 
     /**
@@ -43,10 +45,11 @@ class DownloadDependenciesCommand extends Command
             $mode = 'install';
         }
 
-        $cmd = sprintf("cd %s && %s %s --prefer-source --no-dev",
+        $cmd = sprintf("cd %s && %s %s %s --no-dev",
             $input->getArgument('folder'),
             $this->getApplication()->getComposerExecutable(),
-            $mode
+            $mode,
+            $input->getOption('prefer-source') ? '--prefer-source' : ''
         );
 
         $output->writeln(array(
