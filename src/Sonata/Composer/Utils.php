@@ -22,12 +22,12 @@ final class Utils
      *
      * @return string
      */
-    public function encodeXml($string)
+    static public function encodeXml($string)
     {
         return htmlspecialchars($string,  ENT_COMPAT | ENT_HTML401, 'UTF-8');
     }
 
-    public function cdata($string)
+    static public function cdata($string)
     {
         return self::encodeXml($string);
     }

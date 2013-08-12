@@ -53,6 +53,8 @@ class RunBehatTestsCommand extends Command
             throw new \RuntimeException(sprintf('The folder %s does not exist', $input->getArgument('folder')));
         }
 
+        $buildFolder = realpath($input->getOption('build-folder'));
+
         $output->writeln(sprintf(" >> Running Behat at <info>%s</info>", $input->getArgument('folder')));
 
         $formats = array(
@@ -72,7 +74,7 @@ class RunBehatTestsCommand extends Command
         if ($input->getOption('format')) {
             $cliOptions[] = sprintf('--format %s --out %s/behat%s',
                 $input->getOption('format'),
-                $input->getOption('build-folder'),
+                $buildFolder,
                 $formats[$input->getOption('format')]
             );
         }
