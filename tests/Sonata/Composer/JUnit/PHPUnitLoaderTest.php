@@ -23,4 +23,14 @@ class PHPUnitLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $suite->getErrors());
         $this->assertEquals(6, $suite->countTests());
     }
+
+    public function testBehatXmlFile()
+    {
+        $loader = new PHPUnitLoader();
+        $suite = $loader->load(file_get_contents(__DIR__.'/../../../fixtures/behat-junit.xml'));
+
+        $this->assertEquals(1, $suite->getFailures());
+        $this->assertEquals(0, $suite->getErrors());
+        $this->assertEquals(14, $suite->countTests());
+    }
 }

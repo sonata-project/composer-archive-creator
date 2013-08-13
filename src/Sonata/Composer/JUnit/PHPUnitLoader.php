@@ -28,6 +28,7 @@ class PHPUnitLoader
 
         $testSuite = new TestSuite((string) $xml->testsuite['name'], null, null, null);
 
+        $this->addTestCase($testSuite, $xml);
         $this->addTestCase($testSuite, $xml->testsuite);
         $this->addTestSuite($testSuite, $xml->testsuite);
 
@@ -61,8 +62,8 @@ class PHPUnitLoader
 
             if ($element->failure) {
                 $testcase->setFailure(new TestFailure(
-                    (string) $element->error[0]->attributes()->type,
-                    (string) $element->error[0]
+                    (string) $element->failure[0]->attributes()->type,
+                    (string) $element->failure[0]
                 ));
             }
 

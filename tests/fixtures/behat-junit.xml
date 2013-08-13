@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite classname="behat.features" errors="0" failures="1" name="Check the site admin module" file="/composer-archive-creator/project/repository/features/backend/page/site.feature" tests="12" assertions="60" time="13.807108">
+    <testcase classname="Check the site admin module" name="Check site admin pages when not connected" time="0.088485" assertions="5">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Check site admin pages when connected" time="0.821395">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Add a new site with some errors" time="0.968762">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Add a new site" time="0.965057">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Filter sites" time="0.865301">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Edit a site" time="1.689514">
+    </testcase>
+    <testcase classname="Check the site admin module" name="View revisions of a site" time="1.318218">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Create site snapshots" time="1.147112">
+        <failure message="The text &quot;Snapshots were successfully created.&quot; was not found anywhere in the text of the current page." type="failed"><![CDATA[
+The text "Snapshots were successfully created." was not found anywhere in the text of the current page.
+
++--[ HTTP/1.1 200 | http://sonata.vagrant/admin/sonata/page/site/2/edit | GoutteDriver ]
+|
+|  window.SONATA_CONFIG = { CONFIRM_EXIT: true }; window.SONATA_TRANSLATIONS = { CONFIRM_EXIT: 'You\x20have\x20unsaved\x20changes.' }; Admin Edit "toto" admin - Logout Sonata Project Users Users Groups Pages Pages Site Blog Posts Comments Categories Tags Media Library Media Gallery sonata_notification notifications Demo Car Engine flash_snapshots_created_success ⌂ / Site List / toto Show Revisions Add new Return to list General SEO Name * Is Default Enabled Host * Locale Relative Path Enabled From * JanFebMarAprMayJunJulAugSepOctNovDec1234567891011121314151617181920212223242526272829303120082009201020112012201320142015201620172018000102030405060708091011121314151617181920212223:000102030405060708091011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859 Enabled To * JanFebMarAprMayJunJulAugSepOctNovDec12345678910111213141516171819202122232425262728293031200820092010201120122013201420152016201720180001020304050607080910111213141516171819202122...
+|
+]]></failure>
+    </testcase>
+    <testcase classname="Check the site admin module" name="Show site" time="1.470351">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Export JSON data" time="0.765397">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Export CSV data" time="0.711108">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Export XML data" time="0.683108">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Export XLS data" time="0.467947">
+    </testcase>
+    <testcase classname="Check the site admin module" name="Delete a site" time="1.829318">
+    </testcase>
+</testsuite>
