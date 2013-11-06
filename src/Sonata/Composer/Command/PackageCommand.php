@@ -142,14 +142,14 @@ class PackageCommand extends Command
             @mkdir( $buildRepository . '/packages');
 
             $unitTestOptions = array_merge($defaultTestOptions, array(
-                'folder'         => $repoDestination,
-                '--build-folder' => $buildRepository . '/packages',
+                'folder'               => $repoDestination,
+                '--build-folder'       => $buildRepository . '/packages',
                 '--white-list-package' => $input->getOption('unit-tests-white-list-package')
             ));
 
             if ($input->getOption('report-tests')) {
                 $unitTestOptions = array_merge($unitTestOptions, array(
-                    '--junit' => true,
+                    '--junit'  => true,
                     '--clover' => true,
                 ));
             }
@@ -174,14 +174,14 @@ class PackageCommand extends Command
 
             try {
                 $this->runCommand('tests:behat-setup', array(
-                    'folder' => $repoDestination,
+                    'folder'   => $repoDestination,
                     '--delete' => true
                 ), $output);
 
                 $this->runCommand('tests:behat', $behatTestOptions, $output);
 
                 $this->runCommand('tests:behat-setup', array(
-                    'folder' => $repoDestination,
+                    'folder'      => $repoDestination,
                     '--uninstall' => true
                 ), $output);
             } catch(SuccessException $e) {
@@ -198,18 +198,22 @@ class PackageCommand extends Command
             ), $output);
         }
 
+        // delete cache/* folder
+        $p = new Process(sprintf("rm -rf %s/cache/*", $repoDestination));
+        $p->run();
+
         if (in_array('zip', $input->getOption('format'))) {
             if ($input->getOption('vcs') || $input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
-                    'folder' => $repoDestination,
+                    'folder'      => $repoDestination,
                     'destination' => sprintf("%s/%s_vcs.zip", $buildRepository, $input->getArgument('project')),
-                    '--vcs' => 'true'
+                    '--vcs'       => 'true'
                 ), $output);
             }
 
             if (!$input->getOption('only-vcs')) {
                 $this->runCommand('archive:create', array(
-                    'folder' => $repoDestination,
+                    'folder'      => $repoDestination,
                     'destination' => sprintf("%s/%s.zip", $buildRepository, $input->getArgument('project')),
                 ), $output);
             }
