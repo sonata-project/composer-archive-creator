@@ -201,7 +201,7 @@ class PackageCommand extends Command
 
         // delete cache/* folder
         $output->writeln(sprintf("Deleting cache folder: %s/cache/*", $repoDestination));
-        $p = new Process(sprintf("rm -rf %s/cache/*", $repoDestination));
+        $p = new Process(sprintf("rm -rf %s/app/cache/*", $repoDestination));
         $p->run();
 
         if (in_array('zip', $input->getOption('format'))) {
