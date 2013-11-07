@@ -27,6 +27,11 @@ final class Utils
         return htmlspecialchars($string,  ENT_COMPAT | ENT_HTML401, 'UTF-8');
     }
 
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
     static public function cdata($string)
     {
         return self::encodeXml($string);

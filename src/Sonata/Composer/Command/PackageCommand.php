@@ -128,7 +128,8 @@ class PackageCommand extends Command
                 ), $output)
                 ->runCommand('download:dependencies', array(
                     'folder' => $repoDestination,
-                    'mode'   => 'install'
+                    'mode'   => 'install',
+                    '--prefer-source' => true
                 ), $output)
             ;
         }
@@ -139,7 +140,7 @@ class PackageCommand extends Command
 
         if ($input->getOption('run-unit-tests')) {
 
-            @mkdir( $buildRepository . '/packages');
+            @mkdir($buildRepository . '/packages');
 
             $unitTestOptions = array_merge($defaultTestOptions, array(
                 'folder'               => $repoDestination,
@@ -199,6 +200,7 @@ class PackageCommand extends Command
         }
 
         // delete cache/* folder
+        $output->writeln(sprintf("Deleting cache folder: %s/cache/*", $repoDestination));
         $p = new Process(sprintf("rm -rf %s/cache/*", $repoDestination));
         $p->run();
 

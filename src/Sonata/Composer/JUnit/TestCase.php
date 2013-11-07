@@ -201,6 +201,14 @@ class TestCase
     }
 
     /**
+     * Increments by 1 the number of assertions
+     */
+    public function incAssertions()
+    {
+        $this->assertions += 1;
+    }
+
+    /**
      * @return string
      */
     public function toXml()

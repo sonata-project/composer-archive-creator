@@ -20,6 +20,6 @@ class JUnitMergerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($testsuite);
         $this->assertEquals(1, $testsuite->getErrors());
-        $this->assertEquals(6, $testsuite->countTests());
+        $this->assertEquals(20, $testsuite->countTests());
     }
 }
